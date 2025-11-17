@@ -1,0 +1,63 @@
+
+Sprint: 2 - Research Phase
+
+Current Problems
+
+File Size: Large 40GB compressed dataset
+Performance: <10 FPS
+Requires high-end workstation to run
+
+
+I spent time researching multiple methods that could reduce the dataset size, lower hardware requirements, and increase runtime performance for the CFD wind-turbine visualisation project. The goal was to identify approaches that minimise storage demands, maintain visual and analytical fidelity where necessary, and enable smooth real-time playback on mid-range hardware. The following outlines the key methods and their high-level mechanics.
+
+
+**Method 1: Temporal Interpolation**
+Store only keyframes from the CFD dataset and generate intermediate frames at runtime using interpolation. This is helpful because wind and wave fields change smoothly, so most of the stored frames are redundant.
+How it works:
+
+* Save every Nth timestep instead of all frames
+* Reconstruct missing frames using linear or spherical interpolation
+* Leverages inherent temporal smoothness of fluid motion
+* Reduces dataset size without reducing perceived animation quality
+* Very low runtime computational cost
+
+**Method 2: Procedural Wave Generation**
+Replace the stored ocean mesh data with GPU-generated mathematical waves. This is helpful because ocean surfaces follow predictable equations, meaning you don’t need to store gigabytes of mesh snapshots.
+How it works:
+
+* Extract basic wave parameters from the CFD simulation
+* Store the parameters instead of mesh data
+* Use GPU shaders to generate Gerstner-style waves in real time
+* Produces visually accurate water at a fraction of the size
+* Eliminates the ocean component of the dataset almost entirely
+
+**Method 3: LOD Streaming System**
+Load only the parts of the dataset that the user is actually viewing, similar to how large open-world games stream environments. This is helpful because it prevents full dataset loading and dramatically reduces RAM usage.
+How it works:
+
+* Split the original dataset into small spatial and temporal chunks
+* Detect the viewer’s camera position and direction
+* Stream in only the visible chunks
+* Unload chunks that move out of view
+* Keeps memory usage small while maintaining visual fidelity
+
+**Method 4: Selective Spatial Detail**
+Store high-resolution data only close to the turbine and progressively lower resolution farther away. This is helpful because distant fluid detail provides little perceptual value and wastes storage.
+How it works:
+
+* Define zones around the turbine (high/medium/low detail)
+* Keep full CFD data in the high-detail zone
+* Downsample or decimate medium and far zones
+* Use smooth LOD transitions to avoid noticeable boundaries
+* Preserves important detail while cutting file size
+
+**Method 5: Hybrid Analytical–Data Rendering**
+Replace raw CFD visualisation with simplified analytical models that mimic the behaviour of the CFD data. This is helpful because it preserves visual behaviour while avoiding storage of heavy simulation outputs.
+How it works:
+
+* Compute turbine blade motion analytically rather than from raw data
+* Use simplified equations for wind streamlines
+* Generate ocean waves procedurally using wave equations
+* Use CFD data only to tune the simplified models
+* Achieves extremely small file sizes with high performance
+
