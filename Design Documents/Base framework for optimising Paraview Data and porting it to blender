@@ -1,0 +1,40 @@
+Project: Advanced Post-processing of OpenFOAM Data(Paraview Data) in Blender
+This framework outlines the process of extracting data from ParaView, optimizing it, and importing it into Blender for advanced post-processing and visualization.
+
+Phase 1: Data Preparation and Optimization in ParaView
+
+Open your OpenFOAM case data (the .foam file) in ParaView.
+Build the initial scene within ParaView based on the imported data.
+Scene Optimization:
+
+Here is where we would carefully examine the scene to identify and eliminate unnecessary data.
+The goal is to retain the key functional elements of the wind turbine while reducing the data load.
+Iterate on this process to find the optimal balance between detail and performance.
+Refer to the client when dealing with data containing specific scientific notion as it's not our area of expertise but it is theirs. 
+Once the scene is optimized, export the data from ParaView to an X3D file format, this is the format compatible with Blender.
+
+Phase 2: Importing and Refining in Blender
+
+Open Blender.
+Use the "File" menu to import the X3D file you exported from ParaView.
+
+Use "numpad 0" to view the scene from the same base perspective as in ParaView.
+You can easily move the camera angle to explore different views.
+
+Data Visibility and Scene Management:
+
+Use the scene panel (typically located in the top right) to control the visibility of different variables within your data.
+Toggle the visibility of various components to focus on specific aspects of the simulation.
+Enhancement and Customization:
+
+Add or modify materials, colours, and lighting to enhance the visual representation of your wind turbine.
+Adjust these elements to create a suitable viewing experience for your analysis.
+
+Phase 3: Rendering and Analysis
+
+Render the scene in Blender to generate images or animations.
+The rendering time will depend on the optimization performed in ParaView and the complexity of the scene.
+Analysis:
+
+Use the rendered output to analyse the performance and behaviour of the wind turbine.
+Examine the visual data to gain insights into the simulation results.
