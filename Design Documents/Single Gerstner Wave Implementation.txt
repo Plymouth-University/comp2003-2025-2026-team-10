@@ -1,0 +1,32 @@
+Single Gerstner Wave Implementation
+
+This implementation uses a single data-driven Gerstner wave for maximum performance. It avoids textures, branching, or heavy calculations. Performance depends on keeping the water mesh low-poly, reducing per-vertex evaluations. All wave parameters, except time, are precomputed on the CPU and passed to the GPU. Unity’s built-in time variable drives the wave phase, keeping the CPU workload minimal. Additional waves can be added later, but for optimal performance, one wave is ideal.
+
+
+Wave Parameters
+A single Gerstner wave is defined by amplitude, offset, wavelength, direction, steepness, and angular frequency which can be calculated as follows (where H and L are the highest and lowest points of the wave):
+
+Amplitude = (H – L) / 2
+Offset = (H + L) / 2
+Angular frequency = 2Pi / Period
+Wave number = angular frequency^2 / g
+Wavelength = 2Pi / wave number
+Steepness is a tuning factor controlling horizontal displacement and can be chosen based on either visual preference or physical plausibility. 
+Direction is specified as a unit vector defining the wave’s travel either from the data or chosen arbitrarily.
+
+These calculations are performed once at data load, this minimises runtime cost and ensuring stable values for the shader.
+
+
+C# Wave Manager
+A Unity component stores input data and links to the water material. It computes amplitude, offset, wavelength, angular frequency, and wave number, caching these to avoid per-frame recalculation. Static parameters are sent to the shader, while only time-dependent values are evaluated per frame.
+
+
+Shader and Vertex Displacement
+The shader displaces vertices using the supplied parameters. Vertical displacement is computed via sine (scaled by amplitude) and horizontal displacement via cosine (scaled by steepness and amplitude), producing the rolling wave shape of a Gerstner wave. No lighting, normal reconstruction, or texture sampling is required and so is more performant. Using Unity’s built-in time ensures smooth motion and minimal CPU usage.
+
+
+Unity Setup
+Create a low-poly plane or grid mesh.
+Assign a material with the Gerstner shader.
+Add the Wave Manager component and link the material.
+Adjust wave parameters to match your data.
