@@ -1,7 +1,3 @@
-Below is a **cleaned, polished README version** with improved flow, consistent formatting, and slightly tighter language. Content is unchanged in substance—only presentation and clarity are improved.
-
----
-
 # Procedural Wave Generation Pipeline
 
 **CFD → ParaView → Python → Unity**
