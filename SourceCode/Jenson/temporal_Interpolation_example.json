@@ -1,0 +1,18 @@
+{
+  "model": "temporal_interpolation",
+  "field": "velocity_y",
+  "timesteps": [
+    {
+        "time": 0.0,
+        "values": [0.12, 0.15, 0.18, 0.20]
+    },
+    {
+        "time": 1.0,
+        "values": [0.22, 0.25, 0.27, 0.30]
+    },
+    {
+        "time": 2.0,
+        "values": [0.28, 0.32, 0.35, 0.37]
+    }
+  ]
+}   
