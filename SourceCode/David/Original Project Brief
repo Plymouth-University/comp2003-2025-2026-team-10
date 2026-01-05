@@ -1,0 +1,14 @@
+Project Brief: OpenFOAM CFD Visualisation
+
+Project Overview:
+This project proposes the development of an immersive, real-time visualisation and interrogation platform for offshore wind turbines, addressing the current limitations of computational tools such as OpenFOAM and ParaView, which cannot support interactive or real-time exploration of large offshore datasets. Offshore wind energy systems involve complex interactions between wind fields, turbine blades, floating platforms, mooring lines, and seabed conditions. Existing visualisation solutions are either general-purpose or ad hoc, and no dedicated tool exists for offshore renewable applications.
+
+The work will establish a workflow to convert large-scale simulation data into interactive 3D environments using Unity and virtual reality (VR). The platform will enable users to project line-of-sight wind vectors onto turbine blades to observe aerodynamic responses, simulate wave-driven platform motions, and adjust seabed terrain and soil parameters to study mooring and anchoring behaviour. By optimising data pipelines and integrating realistic environmental conditions, the tool will allow engineers and researchers to interrogate and test offshore turbine performance in ways not possible with static post-processing.
+
+Key Objectives:
+
+Develop a user-centric app with an intuitive interface for immersive, and real-time visualisation.
+Implement robust functionality for itinerary creation for interrogation platform for offshore wind turbines.
+Develop a workflow to export data from OpenFOAM and/or ParaView, which cannot support interactive or real-time exploration of large offshore datasets.
+Development of an engine for processing data sets in real time using 3D physics engines for e.g. Unity, etc.
+Incorporate user feedback to continually improve the app's usability and features.
