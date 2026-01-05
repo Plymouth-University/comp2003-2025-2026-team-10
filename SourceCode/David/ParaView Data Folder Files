@@ -1,0 +1,26 @@
+VAWT Data explained
+
+
+•	U : Velocity field (fluid flow). This data is used for visualizing the interaction between the wind and the wind turbine.
+
+•	p, p_rgh : Pressure and reduced hydrostatic pressure. This data is used to compute and calculate the forces on blades.
+
+•	pointDisplacement : Mesh deformation or solid body motion. This file contains blade motion data.
+
+•	coupledForceField : Likely contains forces (pressure, viscous) on the turbine surface which are critical for analysing torque and power.
+
+•	alpha.water : Volume fraction for multiphase (water/air). If simulating air only flow, this may be irrelevant.
+
+•	k, omega, nut : Turbulence fields (k ω SST model). Needed for accurate flow dynamics.
+
+•	phi, meshphi, Uf : Flux fields across cell faces. Used in solving momentum equations.
+
+•	alphaphi0.water : Phase flux for multiphase, this is likely not needed if only air flow is being simulated.
+
+•	rAU : Reciprocal of momentum predictor matrix diagonal. Not likely to be needed for this visualization/simulation.
+
+•	uniform folder : Contains global simulation properties (time, deltaT, etc.). Necessary for time series reconstruction.
+
+•	polyMesh folder : Mesh topology (points, faces, cells). Required to interpret all field data.
+
+
