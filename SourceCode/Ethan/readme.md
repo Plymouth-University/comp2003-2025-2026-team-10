@@ -190,24 +190,26 @@ This JSON file can be loaded directly by Unity to recreate CFD-derived wave beha
 
 ## Stage 3: Unity Usage (High-Level)
 
-In Unity:
+Within Unity, the procedural wave system is driven entirely by a lightweight JSON configuration generated during the Python preprocessing stage.
 
-* The JSON file is loaded once at startup
-* Wave parameters are stored in arrays or shader constants
-* Each frame, wave displacement is computed using the Gerstner equations
+#### At application startup:
+  * The JSON file containing the wave parameters is loaded once.
+  * Parameters such as amplitude, wavelength, direction, phase, and speed are parsed and stored in arrays or passed to shader constants.
+  * The GerstnerWaterFromJson.cs script is responsible for reading the JSON file, managing the wave parameter data, and updating the water surface.
 
-At runtime:
+#### During runtime:
+  * Each frame, GerstnerWaterFromJson.cs evaluates the Gerstner wave equations using the stored parameters.
+  * Vertex displacement is computed analytically to animate the water surface in real time.
+  * No CFD data or large datasets are loaded once the application is running.
 
-* No CFD data is loaded
-* No large datasets are required
-* Waves are generated analytically with minimal performance cost
+This approach ensures that the visual behaviour of the waves is reconstructed procedurally, with minimal memory usage and negligible runtime overhead.
 
 ---
 
 ## Summary
-
-* ParaView extracts free-surface motion from `alpha.water`
-* Python converts this motion into compact wave parameters
-* Unity regenerates the waves procedurally in real time
-* Storage and hardware requirements are reduced by orders of magnitude
-* The approach aligns with standard practices in real-time graphics and CFD visualisation
+  * ParaView extracts free-surface motion from the alpha.water field in the CFD dataset.
+  * Python processes this motion and converts it into compact Gerstner wave parameters.
+  * These parameters are exported as a lightweight JSON file.
+  * Unity loads the JSON file at startup and uses GerstnerWaterFromJson.cs to drive procedural wave generation.
+  * Waves are regenerated analytically in real time without loading CFD data.
+  * Storage requirements and hardware demands are reduced by orders of magnitude.
