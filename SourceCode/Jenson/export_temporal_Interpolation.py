@@ -19,4 +19,4 @@ data = {
 with open("temporal_interpolation_example.json", "w", encoding="utf-8") as f:
     json.dump(data, f, indent=2)
 
-print("Export updated: temporal_keyframes_example.json")
+print("Export updated: temporal_interpolation_example.json")
