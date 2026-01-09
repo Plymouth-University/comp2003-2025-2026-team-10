@@ -4,8 +4,12 @@
  this prototype focuses on data flow and reconstruction logic, not
 rendering or UI.
    */
+using System;
 using UnityEngine;
 
+//the purpose of the prototype is to Load temporal keyframes from json
+// reconstruct fframes using LERP
+// Focus on data flow and reconstruction logic
 
 
 [System.Serializable]
@@ -23,7 +27,7 @@ public class TemporalDataset
     public TemporalTimeStep[] timesteps;
 }
 
-public class TemporalInterpolationRuntime : MonoBehaviour
+public class TemporalInterpolationUnity : MonoBehaviour
 {
     [Header("Temporal Interpolation Dataset")]
     public TextAsset jsonDataset;
@@ -32,25 +36,40 @@ public class TemporalInterpolationRuntime : MonoBehaviour
 
     void Start()
     {
-        // this loads the json at startup
+        if (jsonDataset == null)
+        {
+            Debug.LogError("No JSON dataset assigned.");
+            return;
+        }
+
         dataset = JsonUtility.FromJson<TemporalDataset>(jsonDataset.text);
 
-        if (dataset == null || dataset.timesteps.Length < 2)
+        if (dataset == null || dataset.timesteps == null || dataset.timesteps.Length < 2)
         {
             Debug.LogError("Invalid temporal interpolation dataset.");
+            dataset = null;
+            return;
         }
+
+        Array.Sort(dataset.timesteps, (a, b) => a.time.CompareTo(b.time));
     }
 
     void Update()
     {
+        if (dataset == null) return;
+
         float tMin = dataset.timesteps[0].time;
         float tMax = dataset.timesteps[dataset.timesteps.Length - 1].time;
-        float queryTime = Mathf.Lerp(tMin, tMax, Mathf.PingPong(Time.time * 0.1f, 1f));
+        float duration = Mathf.Max(0.0001f, tMax - tMin);
+
+        float queryTime = tMin + Mathf.Repeat(Time.time, duration);
 
         float[] interpolatedValues = InterpolateAtTime(queryTime);
 
-
-        Debug.Log($"Interpolated {dataset.field} at t={queryTime:F2}: {interpolatedValues[0]:F3}...");
+        if (interpolatedValues != null && interpolatedValues.Length > 0)
+        {
+            Debug.Log($"Interpolated {dataset.field} at t={queryTime:F2}: {interpolatedValues[0]:F3}...");
+        }
     }
 
     float[] InterpolateAtTime(float queryTime)
@@ -62,7 +81,10 @@ public class TemporalInterpolationRuntime : MonoBehaviour
 
             if (queryTime >= t0.time && queryTime <= t1.time)
             {
-                float alpha = (queryTime - t0.time) / (t1.time - t0.time);
+                float span = t1.time - t0.time;
+                if (span <= 0f) return t0.values;
+
+                float alpha = (queryTime - t0.time) / span;
                 return InterpolateValues(t0.values, t1.values, alpha);
             }
         }
