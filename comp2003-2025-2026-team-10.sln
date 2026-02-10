@@ -1,0 +1,42 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SourceCode", "SourceCode", "{1CE96ABC-977F-9E98-3EDA-16B046FFEBCD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "David", "David", "{8E076FDF-446B-326D-FB32-8659C5D00588}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unity Project source code", "Unity Project source code", "{E88A88DA-1475-A1F5-347F-B10315E63ACC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor", "SourceCode\David\Unity Project source code\Assembly-CSharp-Editor.csproj", "{A1312D32-FDE3-552F-16A7-4D14B7745897}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "SourceCode\David\Unity Project source code\Assembly-CSharp.csproj", "{E6FDF075-F2F8-9B13-12B7-7D19906F4AD7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A1312D32-FDE3-552F-16A7-4D14B7745897}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1312D32-FDE3-552F-16A7-4D14B7745897}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1312D32-FDE3-552F-16A7-4D14B7745897}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1312D32-FDE3-552F-16A7-4D14B7745897}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6FDF075-F2F8-9B13-12B7-7D19906F4AD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6FDF075-F2F8-9B13-12B7-7D19906F4AD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6FDF075-F2F8-9B13-12B7-7D19906F4AD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6FDF075-F2F8-9B13-12B7-7D19906F4AD7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8E076FDF-446B-326D-FB32-8659C5D00588} = {1CE96ABC-977F-9E98-3EDA-16B046FFEBCD}
+		{E88A88DA-1475-A1F5-347F-B10315E63ACC} = {8E076FDF-446B-326D-FB32-8659C5D00588}
+		{A1312D32-FDE3-552F-16A7-4D14B7745897} = {E88A88DA-1475-A1F5-347F-B10315E63ACC}
+		{E6FDF075-F2F8-9B13-12B7-7D19906F4AD7} = {E88A88DA-1475-A1F5-347F-B10315E63ACC}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F688686A-1AB0-457F-BFF0-9325072ED3D0}
+	EndGlobalSection
+EndGlobal
