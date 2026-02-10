@@ -1,215 +1,158 @@
-# Procedural Wave Generation Pipeline
+# CFD Water Surface Reconstruction Pipeline
 
-**CFD → ParaView → Python → Unity**
+**OpenFOAM → ParaView → Python → Unity**
 
 ## Overview
 
-This workflow demonstrates how CFD wave data from an OpenFOAM simulation can be converted into a lightweight, procedurally generated ocean surface in Unity.
+This project demonstrates a complete pipeline for converting CFD free-surface wave data into a real-time animated water surface in Unity.
 
-The primary goal is to **avoid storing large CFD datasets** while preserving realistic wave behaviour by extracting high-level wave characteristics and regenerating them mathematically at runtime.
+Originally, the workflow extracted wave characteristics from CFD data and regenerated them using procedural Gerstner waves in Unity. While this approach was lightweight and mathematically elegant, it produced overly smooth and idealised waves and did not preserve turbulence or wake effects visible in the CFD simulation.
 
-The pipeline consists of three stages:
+To achieve higher visual fidelity, the pipeline was upgraded to use heightmaps with temporal interpolation. This allows Unity to reconstruct the exact surface geometry from the CFD simulation while remaining efficient enough for real-time rendering.
 
-1. Extract free-surface motion from CFD data using ParaView
-2. Process the extracted data in Python to derive wave parameters
-3. Use those parameters in Unity to generate waves procedurally (Gerstner waves)
+The current pipeline consists of:
 
-Two Python scripts are provided:
-
-* One for **testing and Unity integration** using synthetic wave parameters
-* One for **deriving wave parameters from ParaView-exported CFD data**
+1. Extract free-surface geometry from CFD using ParaView
+2. Convert sampled surface data into heightmap images using Python
+3. Animate a high-resolution mesh in Unity using interpolated heightmaps
 
 ---
 
-## Stage 1: Extracting Free-Surface Motion in ParaView
+## Stage 1: Free-Surface Extraction in ParaView
 
 ### Purpose
 
-OpenFOAM represents two-phase flow using the field `alpha.water`, which stores the water volume fraction.
-The water–air interface (free surface) is commonly approximated by the isosurface:
+OpenFOAM stores the water–air interface using the scalar field:
+
+```
+alpha.water
+```
+
+The free surface is extracted as the isosurface:
 
 ```
 alpha.water = 0.5
 ```
 
-ParaView is used to extract this interface and sample its vertical motion over time at a fixed horizontal location.
+This produces a surface mesh representing the water interface at each timestep.
+
+### Steps (ParaView)
+
+1. **Load the OpenFOAM case**
+   - File → Open → `case.foam`
+   - Apply
+
+2. **Enable** `alpha.water`
+
+3. **Apply Contour filter**
+   - Contour By: `alpha.water`
+   - Isosurface: `0.5`
+
+4. **Export surface sampling data**
+   - Use Plot Over Line or surface sampling
+   - Save each timestep to CSV
+
+These CSV files contain:
+
+- Time
+- Points:0 (X)
+- Points:1 (Y)
+- Points:2 (Z / height)
+- WaterHeight
 
 ---
 
-### Step-by-Step (ParaView)
+## Stage 2: Python Heightmap Generation
 
-#### 1. Load the OpenFOAM case
+### Purpose
 
-* File → Open → select the OpenFOAM case file (typically `case.foam`)
-* Click **Apply**
+The Python script converts CFD surface CSV data into grayscale heightmaps.
 
-#### 2. Enable the `alpha.water` field
+Each heightmap represents one timestep of the water surface.
 
-* Select the OpenFOAM reader in the Pipeline Browser
-* In Properties, enable `alpha.water`
-* Click **Apply**
+### What the script does
 
-#### 3. Extract the free surface (interface)
+For each CSV file:
 
-* With the reader selected: **Filters → Contour**
-* Set:
+- Reads X, Y, Z surface coordinates
+- Builds a regular 2D grid
+- Normalizes height values
+- Exports a PNG heightmap
 
-  * **Contour By:** `alpha.water`
-  * **Isosurfaces:** `0.5`
-* Click **Apply**
-
-This produces a surface mesh representing the water–air interface for each timestep.
-
-#### 4. Sample surface height using a vertical line
-
-* Select the **Contour** output
-* Filters → Data Analysis → **Plot Over Line**
-* Define a vertical sampling line at a fixed horizontal location:
-
-  * `Point1 = (x, y_low, z)`
-  * `Point2 = (x, y_high, z)`
-* Choose `y_low` below the minimum water level and `y_high` above the maximum.
-* Click **Apply**
-
-This samples the interface along a vertical line at the chosen `(x, z)` location.
-
-#### 5. Convert line samples into a time series
-
-* Select the **PlotOverLine** output
-* Filters → Temporal → **Plot Data Over Time**
-* Click **Apply**
-
-This produces line-sample values across all timesteps.
-
-#### 6. Save the data to CSV
-
-* Select the **Plot Data Over Time** output
-* File → Save Data
-* Choose **CSV (*.csv)**
-* Ensure **Write Time Steps** is enabled
-* Save as:
+**Output:**
 
 ```
-paraview_line_over_time.csv
+heightmap_0.png
+heightmap_1.png
+...
+heightmap_10.png
 ```
+
+**Grayscale meaning:**
+
+- **White** = highest water elevation
+- **Black** = lowest water elevation
+
+These heightmaps preserve:
+
+- Wave shape
+- Wake turbulence
+- Spatial variation
+- Real CFD behaviour
 
 ---
 
-### Output of the ParaView Stage
+## Stage 3: Unity Reconstruction (Heightmap Animation)
 
-The resulting CSV file contains:
+### Mesh Generation
 
-* Multiple rows per timestep (one per sampled point along the vertical line)
-* Time values
-* Point coordinates (including Y values)
+A custom Plane Generator script creates a high-resolution mesh:
 
-This file represents the free-surface elevation over time and serves as the input to the Python processing stage.
+- Adjustable plane size
+- Adjustable resolution (vertex density)
 
----
+This ensures smooth deformation and avoids the "folded paper" effect seen with low-resolution planes.
 
-## Stage 2: Python Processing Scripts
+### Heightmap Animation
 
-### Script 1: `gerstner_wave_generation_testing.py`
+A Unity script:
 
-#### Purpose
+- Loads all heightmaps from a folder
+- Applies them to the mesh sequentially
+- Interpolates (LERP) between frames for smooth motion
+- Loops animation continuously
 
-* Generate plausible Gerstner wave parameters without using CFD data
-* Test the Unity pipeline (JSON loading and procedural wave rendering)
+This recreates the CFD surface in real time.
 
-#### What it does
+### Key Features
 
-* Generates multiple wave components with varying:
-
-  * Direction
-  * Amplitude
-  * Wavelength
-  * Phase
-  * Speed
-  * Steepness
-* Exports the parameters to a Unity-friendly JSON file
-
-#### Why it exists
-
-* Allows Unity development to proceed independently of CFD processing
-* Provides a clear reference for Gerstner wave parameter structure
-
-#### Output
-
-```
-waves_testing.json
-```
-
-This file is loaded directly by Unity and used to generate waves at runtime.
+- Heightmap-driven deformation (not procedural noise)
+- Frame interpolation for smooth animation
+- High-resolution mesh for realistic curvature
+- Real-time playback in Unity
 
 ---
 
-### Script 2: `gerstner_waves_from_paraview_csv.py`
+## Why Heightmaps Replaced Gerstner Waves
 
-#### Purpose
+### Original method:
+- FFT → wave parameters → Gerstner waves
+- Lightweight and compact
+- Lost turbulence and wake features
+- Looked artificial compared to CFD
 
-* Derive Gerstner wave parameters from CFD-derived free-surface motion
-* Demonstrate that wave parameters can be extracted from simulation data
-
-#### Input
-
-```
-paraview_line_over_time.csv
-```
-
-#### What it does
-
-1. Groups CSV rows by timestep
-2. Extracts the free-surface height η(t) for each timestep
-
-   * Uses the median Y coordinate of contour intersection points
-3. Computes wave characteristics:
-
-   * Amplitude from peak-to-peak height
-   * Dominant frequency via FFT
-   * Angular frequency: `ω = 2πf`
-4. Constructs Gerstner wave parameters
-5. Exports a Unity-compatible JSON file
-
-#### Important clarification
-
-* OpenFOAM fields named `k` and `omega` are **turbulence-model variables**
-* In this pipeline:
-
-  * `k = 2π / L` → wave number
-  * `omega = 2πf` → wave angular frequency
-
-#### Output
-
-```
-waves_from_paraview.json
-```
-
-This JSON file can be loaded directly by Unity to recreate CFD-derived wave behaviour procedurally.
-
----
-
-## Stage 3: Unity Usage (High-Level)
-
-Within Unity, the procedural wave system is driven entirely by a lightweight JSON configuration generated during the Python preprocessing stage.
-
-#### At application startup:
-  * The JSON file containing the wave parameters is loaded once.
-  * Parameters such as amplitude, wavelength, direction, phase, and speed are parsed and stored in arrays or passed to shader constants.
-  * The GerstnerWaterFromJson.cs script is responsible for reading the JSON file, managing the wave parameter data, and updating the water surface.
-
-#### During runtime:
-  * Each frame, GerstnerWaterFromJson.cs evaluates the Gerstner wave equations using the stored parameters.
-  * Vertex displacement is computed analytically to animate the water surface in real time.
-  * No CFD data or large datasets are loaded once the application is running.
-
-This approach ensures that the visual behaviour of the waves is reconstructed procedurally, with minimal memory usage and negligible runtime overhead.
+### Final method:
+- Direct geometry reconstruction
+- Preserves physical simulation features
+- Matches ParaView visually
+- Still efficient for real-time use
 
 ---
 
 ## Summary
-  * ParaView extracts free-surface motion from the alpha.water field in the CFD dataset.
-  * Python processes this motion and converts it into compact Gerstner wave parameters.
-  * These parameters are exported as a lightweight JSON file.
-  * Unity loads the JSON file at startup and uses GerstnerWaterFromJson.cs to drive procedural wave generation.
-  * Waves are regenerated analytically in real time without loading CFD data.
-  * Storage requirements and hardware demands are reduced by orders of magnitude.
+
+- ParaView extracts the free surface from CFD using `alpha.water = 0.5`
+- Python converts sampled surface data into heightmaps
+- Unity animates a high-resolution mesh using interpolated heightmaps
+- The result is a real-time reconstruction of CFD water motion
+- This method preserves realism while remaining computationally efficient
