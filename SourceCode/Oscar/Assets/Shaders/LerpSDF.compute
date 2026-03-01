@@ -1,0 +1,15 @@
+#pragma kernel LerpSDF
+
+Texture3D<float> _SdfA;
+Texture3D<float> _SdfB;
+RWTexture3D<float> _Result;
+
+float _T;
+
+[numthreads(8,8,8)]
+void LerpSDF(uint3 id : SV_DispatchThreadID)
+{
+    float a = _SdfA[id];
+    float b = _SdfB[id];
+    _Result[id] = lerp(a, b, _T);
+}
