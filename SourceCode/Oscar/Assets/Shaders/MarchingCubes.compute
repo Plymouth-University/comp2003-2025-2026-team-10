@@ -1,0 +1,64 @@
+#pragma kernel March
+
+struct VertexData
+{
+    float3 posA;
+    float3 posB;
+    float3 posC;
+};
+
+AppendStructuredBuffer<VertexData> _Triangles;
+Texture3D<float> _SDF;
+
+int _Resolution;
+float _IsoLevel;
+
+float Sample(int3 p)
+{
+    p = clamp(p, 0, _Resolution - 1);
+    return _SDF[p];
+}
+
+float3 VoxelToWorld(int3 p)
+{
+    return (float3)p / (_Resolution - 1);
+}
+
+[numthreads(8,8,8)]
+void March(uint3 id : SV_DispatchThreadID)
+{
+    if (any(id >= _Resolution - 1)) return;
+
+    //sample cube corners
+    float v000 = Sample(id);
+    float v100 = Sample(id + int3(1,0,0));
+    float v010 = Sample(id + int3(0,1,0));
+    float v001 = Sample(id + int3(0,0,1));
+
+    //surface detect
+    bool inside =
+        (v000 < _IsoLevel) ||
+        (v100 < _IsoLevel) ||
+        (v010 < _IsoLevel) ||
+        (v001 < _IsoLevel);
+
+    if (!inside) return;
+
+    //cube face output
+    float3 p = VoxelToWorld(id);
+    float s = 1.0 / (_Resolution - 1);
+
+    VertexData tri;
+
+    //triangle 1
+    tri.posA = p;
+    tri.posB = p + float3(s,0,0);
+    tri.posC = p + float3(0,s,0);
+    _Triangles.Append(tri);
+
+    //triangle 2
+    tri.posA = p + float3(s,0,0);
+    tri.posB = p + float3(s,s,0);
+    tri.posC = p + float3(0,s,0);
+    _Triangles.Append(tri);
+}
