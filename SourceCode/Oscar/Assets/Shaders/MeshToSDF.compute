@@ -1,0 +1,74 @@
+volume#pragma kernel Clear
+#pragma kernel Voxelize
+#pragma kernel DistancePass
+
+RWTexture3D<float> _Volume;
+
+StructuredBuffer<float3> _Vertices;
+StructuredBuffer<int> _Triangles;
+
+int _Resolution;
+float3 _BoundsMin;
+float3 _BoundsSize;
+float _MaxDistance;
+
+//clear volume
+[numthreads(8,8,8)]
+void Clear(uint3 id : SV_DispatchThreadID)
+{
+    if (any(id >= _Resolution)) return;
+    _Volume[id] = _MaxDistance;
+}
+
+//triangle voxelization
+float3 WorldToGrid(float3 p)
+{
+    float3 uv = (p - _BoundsMin) / _BoundsSize;
+    return uv * (_Resolution - 1);
+}
+
+[numthreads(64,1,1)]
+void Voxelize(uint id : SV_DispatchThreadID)
+{
+    uint triIndex = id * 3;
+    if (triIndex + 2 >= _Triangles.Length) return;
+
+    float3 a = _Vertices[_Triangles[triIndex]];
+    float3 b = _Vertices[_Triangles[triIndex+1]];
+    float3 c = _Vertices[_Triangles[triIndex+2]];
+
+    float3 center = (a + b + c) / 3.0;
+    float3 g = WorldToGrid(center);
+
+    int3 voxel = int3(g);
+
+    if (any(voxel < 0) || any(voxel >= _Resolution)) return;
+
+    _Volume[voxel] = 0.0;
+}
+
+//distance pass
+[numthreads(8,8,8)]
+void DistancePass(uint3 id : SV_DispatchThreadID)
+{
+    if (any(id >= _Resolution)) return;
+
+    float best = _Volume[id];
+
+    //check neighbours
+    int3 offsets[6] = {
+        int3(1,0,0), int3(-1,0,0),
+        int3(0,1,0), int3(0,-1,0),
+        int3(0,0,1), int3(0,0,-1)
+    };
+
+    for (int i = 0; i < 6; i++)
+    {
+        int3 n = int3(id) + offsets[i];
+        if (any(n < 0) || any(n >= _Resolution)) continue;
+
+        best = min(best, _Volume[n] + 1.0);
+    }
+
+    _Volume[id] = best;
+}
