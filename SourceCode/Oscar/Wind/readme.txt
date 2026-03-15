@@ -1,4 +1,4 @@
-To generate the widn CSVs use the visualizeWind state in Paraview. Save the Connectivity1 Filter as data with the selected arrays: IntegraitonTime, RegionId, U and CasePath.
+To generate the wind CSVs use the visualizeStreamline state in Paraview. Save the Connectivity1 Filter as data with the selected arrays: IntegrationTime, RegionId, U and CasePath.
 
 Once the script, prefab, material and streamline CSV is in Unity.
 
