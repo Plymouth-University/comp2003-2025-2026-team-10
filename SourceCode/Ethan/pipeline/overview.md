@@ -23,8 +23,7 @@ CFD free surface data is converted into heightmaps which drive
 the animated ocean surface in Unity.
 
 Wind
-Wind simulation outputs are converted into vector fields used by
-particle systems or shaders.
+Wind simulation outputs.
 
 Turbine
 Turbine simulation data is converted into parameters controlling
