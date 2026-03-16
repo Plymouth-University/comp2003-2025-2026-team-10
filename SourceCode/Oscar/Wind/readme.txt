@@ -1,10 +1,15 @@
-Once Installed and everything is in Unity.
+To generate the wind CSVs use the visualizeStreamline state in Paraview. Save the Connectivity1 Filter as data with the selected arrays: IntegrationTime, RegionId, U and CasePath.
 
-Create 2 empty objects in the scene hierarchy(panel on the left) and name one StreamlineSystem and the other Particles.
+Once the script, prefab, material and streamline CSV is in Unity.
 
-Select the StreamlineSystem object and drag the StreamlineSystem script to the right side panel under add component.
+Create 2 empty objects in the scene hierarchy (panel on the left), naming one StreamlineSystem and the other Particles.
 
-Once the script has been added:
-Drag in the wind streamline file to the variable labelled Csv File.
+Select the StreamlineSystem from the hierarchy panel and drag the StreamlineSystem script into the inspector (panel to the right once) to add it as a component.
+
+Select the prefab named 'Wind' and in the inspector window scroll down until you see the TrailRenderer component. Under the component there will be a drop-down box titled 'Material', open the drop-down box and set Element0 to the 'trail' material.
+
+After completing the previous steps select the StreamlineSystem in the hierarchy and within the component named StreamlineSystem, in the inspector panel:
+Drag in the wind streamline CSV file to the variable labelled Csv File.
 Drag the wind prefab into the variable labelled Particle Prefab.
 Drag the Particles object from the scene hierarchy into the Particle Parent.
+Ensure that Speed is set to atleast 100.
