@@ -10,7 +10,7 @@ public class StreamlineSystem : MonoBehaviour
 
     public Transform particleParent;
 
-    public float speed = 1f;
+    public float speed = 100f;
 
     public int particlesPerStreamline = 1;
 
@@ -77,6 +77,7 @@ public class StreamlineSystem : MonoBehaviour
         Debug.Log("Loaded streamlines: " + paths.Count);
     }
 
+    // Combine both the 'BACKWARDS' and 'FORWARDS' streamline to create one continuous streamline
     void BuildCombinedPaths()
     {
         int half = paths.Count / 2;
@@ -131,6 +132,7 @@ public class StreamlineSystem : MonoBehaviour
 
                 trails.Add(p.GetComponent<TrailRenderer>());
 
+                //Spawn particle in random position along the streamline
                 particleDistances.Add(
                     Random.Range(0f, path.Count - 1f)
                 );
