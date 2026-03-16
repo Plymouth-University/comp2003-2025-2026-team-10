@@ -1,5 +1,3 @@
-#sample data to be updated
-
 
 import os
 from process_water import generate_heightmaps
