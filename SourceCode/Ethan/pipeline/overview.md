@@ -1,39 +1,24 @@
-# Simulation Data Processing Pipeline
+I’m consolidating everything into a single pipeline so we can turn what we’ve built into an actual usable product instead of separate scripts.
 
-This folder contains a prototype data pipeline that prepares simulation
-outputs for use inside the Unity visualisation environment.
+The idea is simple: instead of everyone running their own steps manually, we’ll have one main Python script that takes all input data (water, wind, turbine) and processes everything automatically in one go. That script will call separate modules for each part (process_water, process_wind, process_turbine), so your existing work doesn’t get replaced — it just gets plugged into a structured system.
 
-The goal is to automate the conversion of simulation data into
-runtime-ready assets.
+For water, I’ve already started converting the current workflow into this format. Instead of manually running CSV → heightmap → Unity, the pipeline now:
 
-Pipeline stages:
+* reads all CSV frames from an input folder
+* generates heightmaps automatically
+* outputs them directly into Unity’s StreamingAssets
 
-Simulation Data
-    ↓
-Python Processing
-    ↓
-Unity Assets
-    ↓
-Real-Time Environment
+Next step is doing the same for wind and turbine so everything feeds into the same output structure.
 
-## Components
+I’m also adding a metadata file (frame count, etc.) so Unity doesn’t rely on hardcoded values anymore. That means it’ll scale properly when we change datasets (e.g. 10 → 30 frames).
 
-Water
-CFD free surface data is converted into heightmaps which drive
-the animated ocean surface in Unity.
+Everything will sit in a clear folder structure:
 
-Wind
-Wind simulation outputs.
+* input data
+* processing scripts
+* build/output
+* Unity project
 
-Turbine
-Turbine simulation data is converted into parameters controlling
-turbine animation and behaviour.
+I’ll push what I’ve done so far to GitHub so you can see the structure. The goal is that eventually the client just drops data in, runs one script, opens Unity, and it works without manual setup.
 
-## Execution
-
-Run:
-
-python run_pipeline.py
-
-The script reads simulation CSV files and generates the assets
-required by the Unity project.
+Right now I just need clarity on what format your wind and turbine data expects so I can plug them into the same pipeline cleanly.
