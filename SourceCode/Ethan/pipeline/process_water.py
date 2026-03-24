@@ -1,8 +1,4 @@
-def generate_heightmaps(csv_file, output_folder):
-
-    print("Generating heightmaps from water surface data...")
-
-    def generate_heightmaps(input_folder, output_folder):
+def generate_heightmaps(input_folder, output_folder):
 
     import numpy as np
     from PIL import Image
@@ -74,7 +70,6 @@ def generate_heightmaps(csv_file, output_folder):
 
         print("Saved:", output_png)
 
-    print("Heightmaps generated.")
 
     return grid_resolution
     print("Heightmaps generated.")
