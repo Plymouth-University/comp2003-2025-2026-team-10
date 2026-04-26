@@ -1,20 +1,16 @@
 # CFD Visualisation — App
 
-This is the pre-populated version of the visualisation. The Unity project comes with wind streamline data already in place and is designed to be opened and played immediately once the remaining simulation data is added.
+This is the complete, ready-to-run visualisation. All simulation data is included — open the Unity project and press Play.
 
-The visualisation has three components that animate automatically on Play:
+The visualisation renders three components simultaneously from the CFD simulation data:
 
-| Component | Data source |
+| Component | Description |
 |---|---|
-| Water surface | Heightmap PNGs in `Unity Project/Assets/StreamingAssets/HeightMaps/` |
-| Wind streamlines | CSV files in `Unity Project/Assets/Resources/Streamline/` |
-| Turbine motion | `Unity Project/Assets/StreamingAssets/Turbine/turbine.csv` |
+| Water surface | Animated heightmap-driven mesh interpolated between simulation timesteps |
+| Wind streamlines | Particle trails following velocity field streamlines through the domain |
+| Turbine motion | FOWT platform surge, heave, and pitch driven by hub wind speed and displacement data |
 
-Wind CSV data is already included. Before playing, drop the heightmap PNGs and `turbine.csv` into the corresponding folders above. The number of heightmap frames is detected automatically — drop in as many as you have.
-
-The Unity project reads all data at runtime so no recompilation is needed. Open `Unity Project` in Unity Hub, wait for import, then press Play.
-
-Use this version when you want to view the visualisation without running the Python pipeline. Use the Pipeline version if you need to re-process simulation data or modify the scripts.
+Open `Unity Project` in Unity Hub, wait for import, then press Play. No setup or configuration is required.
 
 ## Controls
 

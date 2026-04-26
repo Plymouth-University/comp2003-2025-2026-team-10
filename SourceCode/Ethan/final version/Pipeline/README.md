@@ -1,8 +1,8 @@
 # CFD Visualisation — Pipeline
 
-This is the full, editable version of the visualisation. It contains the complete Python processing pipeline and an empty Unity project that is populated by running it.
+This is the complete, editable pipeline used to produce the visualisation. It contains the full Python processing pipeline and a configured Unity project with all simulation data already in place.
 
-The pipeline is split into three independent modules — one per data type — so any part can be modified or re-run without touching the others:
+The pipeline is split into three independent modules — one per data type — so any part can be modified or re-run independently when new simulation data is available:
 
 | Script | What it does |
 |---|---|
@@ -12,8 +12,6 @@ The pipeline is split into three independent modules — one per data type — s
 | `process_turbine.py` | Validates and copies the turbine motion CSV into the Unity project |
 | `run_pipeline.py` | Orchestrates all three processing steps in sequence |
 
-Raw simulation data goes into `Simulation_Input/` and processed output is written directly into `Unity Project/Assets/` — so opening the Unity project and pressing Play after running the pipeline is all that is needed.
+Processed data lives in `Simulation_Input/` and is written directly into `Unity Project/Assets/` by `run_pipeline.py`. The Unity project reads all data at runtime so no recompilation is needed when simulation data changes — the number of heightmap frames and wind timestep files is detected automatically.
 
-The Unity project loads all data at runtime from `StreamingAssets/` and `Resources/`, meaning no recompilation is needed when simulation data changes. The number of heightmap frames and wind timestep files is detected automatically.
-
-Use this version to re-run the pipeline with new simulation data, adjust processing parameters, or modify the Unity scripts.
+Use this version to re-run the pipeline with new simulation data, adjust processing parameters, or modify the Unity scripts. The App folder contains the same Unity project pre-packaged for viewing without any pipeline setup.
