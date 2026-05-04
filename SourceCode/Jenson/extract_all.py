@@ -153,8 +153,20 @@ def extract_pressure(reader, timestep_index):
     contour.ComputeScalars = 1
     contour.UpdatePipeline()
 
+    poly  = servermanager.Fetch(contour)
+    pts   = poly.GetPoints()
+    p_arr = poly.GetPointData().GetArray("p")
+    n_pts = pts.GetNumberOfPoints()
+
     out_path = os.path.join(PRESSURE_DIR, f"pressure_{timestep_index}.csv")
-    SaveData(out_path, proxy=contour)
+    with open(out_path, "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(["Points:0", "Points:1", "Points:2", "p"])
+        for j in range(n_pts):
+            x, y, z = pts.GetPoint(j)
+            p = float(p_arr.GetValue(j)) if p_arr else 0.0
+            writer.writerow([x, y, z, p])
+
     Delete(contour)
     return out_path
 
