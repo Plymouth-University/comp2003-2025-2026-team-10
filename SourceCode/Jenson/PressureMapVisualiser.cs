@@ -12,17 +12,10 @@ public class PressureMapVisualiser : MonoBehaviour
     [Header("Playback")]
     public float animationSpeed = 1f;
 
-    [Header("Plane Settings")]
-    public Vector2 planeSize = new Vector2(10, 10);
-
-    [Header("Colour Gradient")]
-    public Gradient pressureGradient;
-
     [Header("Scene Alignment")]
     public Vector3 scenePosition = new Vector3(7.5f, 0f, 0f);
 
-    private Mesh mesh;
-    private Color[] colours;
+    private Material material;
     private List<Texture2D> pressureMaps = new List<Texture2D>();
 
     // Start at 1 to skip frame 0 which can have CFD startup interference
@@ -31,10 +24,7 @@ public class PressureMapVisualiser : MonoBehaviour
     void Start()
     {
         transform.position = scenePosition;
-
-        mesh = GetComponent<MeshFilter>().mesh;
-        colours = new Color[mesh.vertexCount];
-
+        material = GetComponent<MeshRenderer>().material;
         LoadPressureMaps();
     }
 
@@ -49,7 +39,9 @@ public class PressureMapVisualiser : MonoBehaviour
         int frameB = (frameA + 1) % pressureMaps.Count;
         float lerpT = frameFloat - frameA;
 
-        ApplyPressureMaps(pressureMaps[frameA], pressureMaps[frameB], lerpT);
+        material.SetTexture("_PressureMapA", pressureMaps[frameA]);
+        material.SetTexture("_PressureMapB", pressureMaps[frameB]);
+        material.SetFloat("_Blend", lerpT);
     }
 
     void LoadPressureMaps()
@@ -74,29 +66,5 @@ public class PressureMapVisualiser : MonoBehaviour
 
         if (pressureMaps.Count == 0)
             Debug.LogError("PressureMapVisualiser: no pressure maps found — check StreamingAssets/" + pressureMapFolder + "/");
-    }
-
-    void ApplyPressureMaps(Texture2D mapA, Texture2D mapB, float t)
-    {
-        int w = mapA.width;
-        int h = mapA.height;
-
-        Vector3[] verts = mesh.vertices;
-
-        for (int i = 0; i < verts.Length; i++)
-        {
-            float u = Mathf.InverseLerp(-planeSize.x * 0.5f, planeSize.x * 0.5f, verts[i].x);
-            float v = Mathf.InverseLerp(-planeSize.y * 0.5f, planeSize.y * 0.5f, verts[i].z);
-
-            int x = Mathf.Clamp(Mathf.RoundToInt(u * (w - 1)), 0, w - 1);
-            int y = Mathf.Clamp(Mathf.RoundToInt(v * (h - 1)), 0, h - 1);
-
-            float pA = mapA.GetPixel(x, y).grayscale;
-            float pB = mapB.GetPixel(x, y).grayscale;
-
-            colours[i] = pressureGradient.Evaluate(Mathf.Lerp(pA, pB, t));
-        }
-
-        mesh.colors = colours;
     }
 }
