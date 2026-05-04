@@ -1,17 +1,78 @@
-# CFD Visualisation — Pipeline
+# FOWT Visualisation Pipeline
 
-This is the complete, editable pipeline used to produce the visualisation. It contains the full Python processing pipeline and a configured Unity project with all simulation data already in place.
+Processes raw OpenFOAM simulation data and loads it directly into the built Unity app.
 
-The pipeline is split into three independent modules — one per data type — so any part can be modified or re-run independently when new simulation data is available:
+---
 
-| Script | What it does |
-|---|---|
-| `extract_all.py` | Opens the OpenFOAM case in ParaView and extracts water, wind, and turbine data as CSVs |
-| `process_water.py` | Converts water surface point clouds into 256×256 heightmap PNGs |
-| `process_wind.py` | Renames and copies wind streamline CSVs into the Unity project |
-| `process_turbine.py` | Validates and copies the turbine motion CSV into the Unity project |
-| `run_pipeline.py` | Orchestrates all three processing steps in sequence |
+## Requirements
 
-Processed data lives in `Simulation_Input/` and is written directly into `Unity Project/Assets/` by `run_pipeline.py`. The Unity project reads all data at runtime so no recompilation is needed when simulation data changes — the number of heightmap frames and wind timestep files is detected automatically.
+- Python 3.x with: `numpy`, `Pillow`, `scipy`, `opencv-python`
+- ParaView with `pvpython` available on your system PATH
 
-Use this version to re-run the pipeline with new simulation data, adjust processing parameters, or modify the Unity scripts. The App folder contains the same Unity project pre-packaged for viewing without any pipeline setup.
+Install Python dependencies:
+```
+pip install numpy Pillow scipy opencv-python
+```
+
+---
+
+## How to run
+
+**1. Open `run_pipeline.py` and set your case path at the top:**
+```python
+CASE_FILE = "C:/path/to/your/case.foam"
+```
+
+**2. Run it:**
+```
+python run_pipeline.py
+```
+
+**3. Launch `FOWT Visualisation Simulation/VAWT Turbine simulation.exe`**
+
+That's it. The pipeline writes all processed data directly into the app — no manual file copying needed.
+
+---
+
+## What it does
+
+The pipeline runs in four steps:
+
+**Step 1 — Extract from OpenFOAM** *(skipped automatically if Simulation_Input already has data)*
+- `extract_water.py` — pulls the water surface point cloud at each timestep
+- `extract_streamlines.py` — traces wind streamlines through the velocity field, recording actual wind speed per point
+- `Extract_fowt.py` — probes wind speed at the turbine hub across all timesteps
+
+**Step 2 — Process water**
+- `process_water.py` — converts the water surface point clouds into 256×256 heightmap PNGs
+
+**Step 3 — Optical flow**
+- `optical_flow.py` — computes per-pixel motion vectors between consecutive heightmaps for smooth water animation
+
+**Step 4 — Copy into the app**
+- Moves all processed data into `FOWT Visualisation Simulation/VAWT Turbine simulation_Data/StreamingAssets/`
+
+---
+
+## Folder structure
+
+```
+Pipeline/
+├── run_pipeline.py          ← run this
+├── extract_water.py         ← ParaView: water surface extraction
+├── extract_streamlines.py   ← ParaView: wind streamlines with velocity
+├── Extract_fowt.py          ← ParaView: turbine hub wind speed
+├── process_water.py         ← converts water CSVs to heightmap PNGs
+├── optical_flow.py          ← computes flow maps from heightmaps
+├── Simulation_Input/        ← intermediate data (auto-populated)
+│   ├── water/
+│   ├── wind/
+│   └── turbine/
+└── FOWT Visualisation Simulation/   ← the built Unity app
+```
+
+---
+
+## Re-running with new simulation data
+
+Delete the contents of `Simulation_Input/water/`, `wind/`, and `turbine/`, then run `run_pipeline.py` again. If those folders have data in them the extraction step is skipped, so clearing them forces a fresh extraction from ParaView.

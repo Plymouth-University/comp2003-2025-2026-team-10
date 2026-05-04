@@ -22,9 +22,12 @@ def generate_heightmaps(input_folder, output_folder):
     if not csv_files:
         raise FileNotFoundError(f"No CSV files found in: {input_folder}")
 
+    os.makedirs(output_folder, exist_ok=True)
+
     for i, filename in enumerate(csv_files):
         csv_path = os.path.join(input_folder, filename)
-        out_path = os.path.join(output_folder, f"heightmap_{i}.png")
+        # David's Unity app expects heightmaps starting at 1, not 0
+        out_path = os.path.join(output_folder, f"heightmap_{i + 1}.png")
 
         print(f"  [{i+1}/{len(csv_files)}] {filename}")
 
@@ -44,7 +47,7 @@ def generate_heightmaps(input_folder, output_folder):
         xi = np.linspace(x.min(), x.max(), GRID_RESOLUTION)
         zi = np.linspace(z.min(), z.max(), GRID_RESOLUTION)
 
-        grid = np.zeros((GRID_RESOLUTION, GRID_RESOLUTION))
+        grid   = np.zeros((GRID_RESOLUTION, GRID_RESOLUTION))
         counts = np.zeros_like(grid)
 
         for n in range(len(h)):
@@ -57,7 +60,7 @@ def generate_heightmaps(input_folder, output_folder):
         counts[counts == 0] = 1
         grid /= counts
 
-        low = np.percentile(grid, 2)
+        low  = np.percentile(grid, 2)
         high = np.percentile(grid, 98)
         grid = np.clip(grid, low, high)
         grid = (grid - low) / (high - low)

@@ -1,28 +1,25 @@
-# CFD Visualisation — App
+# FOWT Visualisation — App
 
-This is the complete, ready-to-run visualisation. All simulation data is included — open the Unity project and press Play.
+Ready-to-run builds for Windows and Linux. Just open the application and it works — no setup, no Unity, no pipeline required.
 
 The visualisation renders three components simultaneously from the CFD simulation data:
 
-| Component | Description |
-|---|---|
-| Water surface | Animated heightmap-driven mesh interpolated between simulation timesteps |
-| Wind streamlines | Particle trails following velocity field streamlines through the domain |
-| Turbine motion | FOWT platform surge, heave, and pitch driven by hub wind speed and displacement data |
 
-Open `Unity Project` in Unity Hub, wait for import, then press Play. No setup or configuration is required.
+---
 
-## Controls
+## Running the app
 
-| Control | Action |
-|---|---|
-| Hold right mouse + W/A/S/D | Move through the scene |
-| Hold right mouse + move mouse | Look around |
-| Hold right mouse + E / Q | Move camera up / down |
-| Scroll wheel | Zoom |
+- **Windows** — open `Windows Version/` and launch the `.exe`
+- **Linux** — open `Linux Version/` and launch the application binary
 
-## Requirements
+No installation or configuration required.
 
-- Unity 2022 LTS or later
-- Windows 10 64-bit or later
-- 8 GB RAM minimum
+---
+
+## Simulation data included
+
+Both builds come pre-loaded with the full FOWT simulation dataset covering **timesteps 30–65**.
+
+The raw OpenFOAM CFD output for this dataset is approximately **220 GB**. The processed data bundled here is **under 1 GB**, achieved by converting the simulation data into compressed heightmaps and streamline CSVs — a fraction of the original size with a fraction of the computational requirements.
+
+---
