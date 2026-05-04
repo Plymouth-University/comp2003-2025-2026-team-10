@@ -1,0 +1,16 @@
+# Unity generated - never commit these
+Library/
+Temp/
+Logs/
+obj/
+Build/
+Builds/
+UserSettings/
+
+# Large Unity package cache files
+*.tar.7z
+*.tar.gz
+
+# OS
+.DS_Store
+Thumbs.db
